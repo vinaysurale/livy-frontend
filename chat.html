@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LIVY - Legal AI Assistant</title>
+  <style>
+    body {
+      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .chatbox {
+      width: 90%;
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      padding: 20px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+    .msg {
+      margin: 10px 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      max-width: 80%;
+    }
+    .user {
+      align-self: flex-end;
+      background: #007bff;
+      color: white;
+    }
+    .livy {
+      align-self: flex-start;
+      background: #e4e6eb;
+      color: #333;
+    }
+    .input-area {
+      display: flex;
+      align-items: center;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      gap: 10px;
+    }
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .mic {
+      background: #ff3b30;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chatbox">
+    <div class="messages" id="messages">
+      <div class="msg livy">Hi, I’m LIVY. Ask me anything about Indian law. 👩‍⚖️</div>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type or speak your legal question...">
+      <button onclick="sendMessage()">Ask</button>
+      <button class="mic" onclick="startListening()">🎤</button>
+    </div>
+  </div>
+
+<script>
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const messages = document.getElementById("messages");
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    const userMsg = document.createElement("div");
+    userMsg.className = "msg user";
+    userMsg.innerText = userText;
+    messages.appendChild(userMsg);
+
+    const livyReply = document.createElement("div");
+    livyReply.className = "msg livy";
+    livyReply.innerText = "📚 Thinking...";
+    messages.appendChild(livyReply);
+
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+      const res = await fetch("http://localhost:3000/api/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ question: userText })
+      });
+
+      const data = await res.json();
+      livyReply.innerText = data.answer || "⚠️ LIVY couldn't answer.";
+    } catch (err) {
+      livyReply.innerText = "⚠️ Error reaching LIVY server.";
+      console.error(err);
+    }
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function startListening() {
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      document.getElementById("userInput").value = transcript;
+    };
+
+    recognition.onerror = function(event) {
+      alert('🎙️ Voice input failed: ' + event.error);
+    };
+
+    recognition.start();
+  }
+</script>
+
+</body>
+</html>
