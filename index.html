@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Welcome to LIVY 👩‍⚖️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="https://img.icons8.com/emoji/48/judge-emoji.png">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -14,14 +16,19 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      text-align: center;
     }
+
     h1 {
       font-size: 2em;
       color: #222;
+      margin-bottom: 20px;
     }
+
     .links {
       margin-top: 30px;
     }
+
     .links a {
       display: block;
       margin: 10px;
@@ -31,10 +38,22 @@
       background: #007bff;
       padding: 10px 20px;
       border-radius: 8px;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
+
     .links a:hover {
       background: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .links a {
+        font-size: 16px;
+        padding: 10px 16px;
+      }
     }
   </style>
 </head>
